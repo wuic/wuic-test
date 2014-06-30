@@ -38,6 +38,10 @@
 
 package com.github.wuic.test;
 
+<<<<<<< HEAD
+import com.github.wuic.jee.WuicJeeContext;
+=======
+>>>>>>> Test method can specify their own XML configuration file for https://github.com/wuic/wuic/issues/101
 import com.github.wuic.jee.WuicServletContextListener;
 import com.github.wuic.servlet.HtmlParserFilter;
 import com.github.wuic.servlet.WuicServlet;
@@ -50,6 +54,10 @@ import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.DeploymentManager;
 import io.undertow.servlet.api.FilterInfo;
 import io.undertow.servlet.api.ListenerInfo;
+<<<<<<< HEAD
+import io.undertow.servlet.api.ServletInfo;
+=======
+>>>>>>> Test method can specify their own XML configuration file for https://github.com/wuic/wuic/issues/101
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
