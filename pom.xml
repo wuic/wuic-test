@@ -80,10 +80,15 @@
             <version>${httpclient.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.github.wuic</groupId>
+            <artifactId>wuic-servlet</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>com.github.wuic</groupId>
-            <artifactId>wuic-core</artifactId>
+            <artifactId>wuic-tag</artifactId>
             <version>${project.version}</version>
         </dependency>
 

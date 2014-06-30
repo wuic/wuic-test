@@ -38,70 +38,23 @@
 
 package com.github.wuic.test;
 
-import com.github.wuic.util.IOUtils;
-import io.undertow.Undertow;
-import io.undertow.server.HttpHandler;
-import io.undertow.server.HttpServerExchange;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.junit.runner.Description;
 import org.junit.runner.notification.RunListener;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.InitializationError;
 
-import java.io.IOException;
-
 /**
+ * <p>
  * This class runner could be used with @RunWith annotation to execute unit test inside a servlet container.
  * The class wraps undertow to deploy web application.
+ * </p>
  *
  * @author Guillaume DROUET
  * @since 0.5.0
  * @version 0.1
  */
 public class ServletContainer extends BlockJUnit4ClassRunner {
-
-    /**
-     * The default host name.
-     */
-    public static final String DEFAULT_HOST = "localhost";
-
-    /**
-     * The default port.
-     */
-    public static final int DEFAULT_PORT = 9876;
-
-    /**
-     * The host name.
-     */
-    public static String host = DEFAULT_HOST;
-
-    /**
-     * The listened port.
-     */
-    public static int port = DEFAULT_PORT;
-
-    /**
-     * The handler that must be set by unit tests.
-     */
-    public static HttpHandler handler;
-
-    /**
-     * The root handler.
-     */
-    public static HttpHandler rootHandler = new HttpHandler() {
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void handleRequest(HttpServerExchange exchange) throws Exception {
-            handler.handleRequest(exchange);
-        }
-    };
 
     /**
      * <p>
@@ -116,30 +69,10 @@ public class ServletContainer extends BlockJUnit4ClassRunner {
     }
 
     /**
-     * <p>
-     * Helps to execute an HTTP request with GET method.
-     * </p>
-     *
-     * @param path the path to execute.
-     * @return the http response
-     * @throws IOException if I/O error occurs
-     */
-    public static HttpResponse get(final String path) throws IOException {
-        final HttpClient client = HttpClientBuilder.create().build();
-        HttpGet get = new HttpGet(IOUtils.mergePath("http://" + host + ":" + port, path));
-        return client.execute(get);
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
     public void run(final RunNotifier notifier) {
-        final Undertow server = Undertow.builder()
-                .addHttpListener(port, host)
-                .setHandler(rootHandler)
-                .build();
-
         notifier.addListener(new RunListener() {
 
             /**
@@ -152,7 +85,6 @@ public class ServletContainer extends BlockJUnit4ClassRunner {
             }
         });
 
-        server.start();
         super.run(notifier);
     }
 }
