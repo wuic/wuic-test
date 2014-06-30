@@ -36,79 +36,72 @@
  */
 
 
-package com.github.wuic.test;
+package com.github.wuic.test.testthetest;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import com.github.wuic.test.Server;
+import com.github.wuic.test.ServletContainer;
+import com.github.wuic.test.WuicConfiguration;
+import com.github.wuic.test.WuicRunnerConfiguration;
+import com.github.wuic.util.IOUtils;
+import org.junit.Assert;
+import org.junit.ClassRule;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 /**
  * <p>
- * Annotation used to configure test runner.
+ * Tests the servlet container runner.
  * </p>
  *
  * @author Guillaume DROUET
- * @version 1.0
  * @since 0.5.0
+ * @version 0.1
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-@Inherited
-public @interface WuicRunnerConfiguration {
+@RunWith(ServletContainer.class)
+@WuicRunnerConfiguration(welcomePage = "index.html", webApplicationPath = "/testthetest")
+public class ServletContainerTest {
+
+    /**
+     * The server running during tests.
+     */
+    @ClassRule
+    public static Server server = new Server();
+
+    /**
+     * The current configuration.
+     */
+    @Rule
+    public WuicConfiguration configuration = new WuicConfiguration();
 
     /**
      * <p>
-     * Indicates if the {@link com.github.wuic.servlet.HtmlParserFilter} should be installed.
+     * Executes a basic HTTP request and reads the response.
      * </p>
      *
-     * @return {@code true} if filter is required, {@code false} otherwise
+     * @throws IOException if any I/O error occurs
      */
-    boolean installFilter() default false;
+    @Test
+    public void basicHttpGetTest() throws IOException {
+        final String content = IOUtils.readString(new InputStreamReader(server.get("/").getEntity().getContent()));
+        Assert.assertTrue(content, content.contains("Hello World"));
+    }
 
     /**
      * <p>
-     * Indicates if the {@link com.github.wuic.servlet.WuicServlet} should be installed.
+     * Executes a basic HTTP request and reads the response.
      * </p>
      *
-     * @return {@code true} if servlet is required, {@code false} otherwise
+     * @throws Exception if test fails
      */
-    boolean installWuicServlet() default true;
-
-    /**
-     * <p>
-     * Returns the classpath entry corresponding to the web application to be deployed.
-     * </p>
-     *
-     * @return the path
-     */
-    String webApplicationPath() default "/";
-
-    /**
-     * <p>
-     * Indicates any welcome page.
-     * </p>
-     *
-     * @return the welcome page
-     */
-    String welcomePage() default "";
-
-    /**
-     * <p>
-     * Indicates the listened port.
-     * </p>
-     *
-     * @return the listened port (8080 by default)
-     */
-    int port() default 8080;
-
-    /**
-     * <p>
-     * Indicates the deployed domain.
-     * </p>
-     *
-     * @return the domain (localhost by default)
-     */
-    String host() default "localhost";
+    @Test
+    public void basicWuicXmlTest() throws Exception {
+        configuration.setWuicXmlReader(new FileReader(getClass().getResource("/testthetest/wuic.xml").getFile()));
+        final String content = IOUtils.readString(new InputStreamReader(server.get("/wuic/heap/aggregate.css").getEntity().getContent()));
+        Assert.assertTrue(content, content.contains(".cssclass {}"));
+    }
 }

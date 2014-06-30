@@ -36,49 +36,54 @@
  */
 
 
-package com.github.wuic.test.testthetest;
+package com.github.wuic.test;
 
-import com.github.wuic.test.Server;
-import com.github.wuic.test.ServletContainer;
-import com.github.wuic.test.WuicRunnerConfiguration;
-import com.github.wuic.util.IOUtils;
-import org.junit.Assert;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import com.github.wuic.jee.WuicJeeContext;
+import com.github.wuic.xml.ReaderXmlContextBuilderConfigurator;
+import org.junit.rules.ExternalResource;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.Reader;
 
 /**
  * <p>
- * Tests the servlet container runner.
+ * This rule performs per-test configurations.
  * </p>
  *
  * @author Guillaume DROUET
+ * @version 1.0
  * @since 0.5.0
- * @version 0.1
  */
-@RunWith(ServletContainer.class)
-@WuicRunnerConfiguration(welcomePage = "index.html", webApplicationPath = "/testthetest")
-public class ServletContainerTest {
+public class WuicConfiguration extends ExternalResource {
 
     /**
-     * The server running during tests.
+     * Tag name.
      */
-    @ClassRule
-    public static Server server = new Server();
+    private static final String TAG = WuicConfiguration.class.getName();
+
+    /**
+     * Reader on the current configuration.
+     */
+    private Reader wuicXmlReader;
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void after() {
+        WuicJeeContext.getWuicFacade().clearTag(TAG);
+        wuicXmlReader = null;
+    }
 
     /**
      * <p>
-     * Executes a basic HTTP request and reads the response.
+     * Sets the current configuration accessible with the given reader.
      * </p>
      *
-     * @throws IOException if any I/O error occurs
+     * @param wuicXmlFile the XML configuration reader
+     * @throws Exception if XML configuration fails
      */
-    @Test
-    public void basicHttpGetTest() throws IOException {
-        final String content = IOUtils.readString(new InputStreamReader(server.get("/").getEntity().getContent()));
-        Assert.assertTrue(content, content.contains("Hello World"));
+    public void setWuicXmlReader(final Reader wuicXmlFile) throws Exception {
+        this.wuicXmlReader = wuicXmlFile;
+        WuicJeeContext.getWuicFacade().configure(new ReaderXmlContextBuilderConfigurator(wuicXmlReader, TAG, false));
     }
 }
