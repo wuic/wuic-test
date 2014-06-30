@@ -36,55 +36,72 @@
  */
 
 
-package com.github.wuic.test;
+package com.github.test.testthetest;
 
-import org.junit.runner.Description;
-import org.junit.runner.notification.RunListener;
-import org.junit.runner.notification.RunNotifier;
-import org.junit.runners.BlockJUnit4ClassRunner;
-import org.junit.runners.model.InitializationError;
+import com.github.wuic.test.Server;
+import com.github.wuic.test.WuicConfiguration;
+import com.github.wuic.test.WuicRunnerConfiguration;
+import com.github.wuic.util.IOUtils;
+import org.junit.Assert;
+import org.junit.ClassRule;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
+
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 /**
  * <p>
- * This class runner could be used with @RunWith annotation to execute unit test inside a servlet container.
- * The class wraps undertow to deploy web application.
+ * Tests the servlet container runner.
  * </p>
  *
  * @author Guillaume DROUET
  * @since 0.5.0
  * @version 0.1
  */
-public class ServletContainer extends BlockJUnit4ClassRunner {
+@RunWith(JUnit4.class)
+@WuicRunnerConfiguration(welcomePage = "index.html", webApplicationPath = "/testthetest")
+public class ServletContainerTest {
+
+    /**
+     * The server running during tests.
+     */
+    @ClassRule
+    public static Server server = new Server();
+
+    /**
+     * The current configuration.
+     */
+    @Rule
+    public WuicConfiguration configuration = new WuicConfiguration();
 
     /**
      * <p>
-     * Builds a new instance.
+     * Executes a basic HTTP request and reads the response.
      * </p>
      *
-     * @param klass the run class
-     * @throws InitializationError if instantiation fails
+     * @throws IOException if any I/O error occurs
      */
-    public ServletContainer(final Class<?> klass) throws InitializationError {
-        super(klass);
+    @Test
+    public void basicHttpGetTest() throws IOException {
+        final String content = IOUtils.readString(new InputStreamReader(server.get("/").getEntity().getContent()));
+        Assert.assertTrue(content, content.contains("Hello World"));
     }
 
     /**
-     * {@inheritDoc}
+     * <p>
+     * Executes a basic HTTP request and reads the response.
+     * </p>
+     *
+     * @throws Exception if test fails
      */
-    @Override
-    public void run(final RunNotifier notifier) {
-        notifier.addListener(new RunListener() {
-
-            /**
-             * {@inheritDoc}
-             */
-            @Override
-            public void testRunStarted(final Description description) throws Exception {
-                // We should deploy custom configuration detected from annotations here.
-                super.testRunStarted(description);
-            }
-        });
-
-        super.run(notifier);
+    @Test
+    public void basicWuicXmlTest() throws Exception {
+        configuration.setWuicXmlReader(new FileReader(getClass().getResource("/testthetest/wuic.xml").getFile()));
+        final String content = IOUtils.readString(new InputStreamReader(server.get("/wuic/heap/aggregate.css").getEntity().getContent()));
+        Assert.assertTrue(content, content.contains(".cssclass {}"));
     }
 }

@@ -36,72 +36,11 @@
  */
 
 
-package com.github.wuic.test.testthetest;
-
-import com.github.wuic.test.Server;
-import com.github.wuic.test.ServletContainer;
-import com.github.wuic.test.WuicConfiguration;
-import com.github.wuic.test.WuicRunnerConfiguration;
-import com.github.wuic.util.IOUtils;
-import org.junit.Assert;
-import org.junit.ClassRule;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-
 /**
  * <p>
- * Tests the servlet container runner.
+ * This packages contains unit tests that verify provided features.
  * </p>
  *
  * @author Guillaume DROUET
- * @since 0.5.0
- * @version 0.1
  */
-@RunWith(ServletContainer.class)
-@WuicRunnerConfiguration(welcomePage = "index.html", webApplicationPath = "/testthetest")
-public class ServletContainerTest {
-
-    /**
-     * The server running during tests.
-     */
-    @ClassRule
-    public static Server server = new Server();
-
-    /**
-     * The current configuration.
-     */
-    @Rule
-    public WuicConfiguration configuration = new WuicConfiguration();
-
-    /**
-     * <p>
-     * Executes a basic HTTP request and reads the response.
-     * </p>
-     *
-     * @throws IOException if any I/O error occurs
-     */
-    @Test
-    public void basicHttpGetTest() throws IOException {
-        final String content = IOUtils.readString(new InputStreamReader(server.get("/").getEntity().getContent()));
-        Assert.assertTrue(content, content.contains("Hello World"));
-    }
-
-    /**
-     * <p>
-     * Executes a basic HTTP request and reads the response.
-     * </p>
-     *
-     * @throws Exception if test fails
-     */
-    @Test
-    public void basicWuicXmlTest() throws Exception {
-        configuration.setWuicXmlReader(new FileReader(getClass().getResource("/testthetest/wuic.xml").getFile()));
-        final String content = IOUtils.readString(new InputStreamReader(server.get("/wuic/heap/aggregate.css").getEntity().getContent()));
-        Assert.assertTrue(content, content.contains(".cssclass {}"));
-    }
-}
+package com.github.test.testthetest;
