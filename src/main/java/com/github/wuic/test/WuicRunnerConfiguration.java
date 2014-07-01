@@ -59,6 +59,11 @@ import java.lang.annotation.Target;
 public @interface WuicRunnerConfiguration {
 
     /**
+     * Default port.
+     */
+    int DEFAULT_PORT = 8080;
+
+    /**
      * <p>
      * Indicates if the {@link com.github.wuic.servlet.HtmlParserFilter} should be installed.
      * </p>
@@ -101,7 +106,7 @@ public @interface WuicRunnerConfiguration {
      *
      * @return the listened port (8080 by default)
      */
-    int port() default 8080;
+    int port() default DEFAULT_PORT;
 
     /**
      * <p>

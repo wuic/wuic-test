@@ -57,8 +57,11 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.DispatcherType;
+import javax.servlet.ServletException;
 import java.io.File;
 import java.io.IOException;
 
@@ -85,6 +88,11 @@ public class Server implements TestRule {
     private static final String WUIC_SERVLET_MAPPING = WUIC_SERVLET_PATH + "/*";
 
     /**
+     * The logger.
+     */
+    private final Logger log = LoggerFactory.getLogger(getClass());
+
+    /**
      * The running server.
      */
     private Undertow server;
@@ -106,10 +114,12 @@ public class Server implements TestRule {
     public Statement apply(final Statement base, final Description description) {
         return new Statement() {
             @Override
-            public void evaluate() throws Throwable {
-                before(description);
+            public void evaluate() {
                 try {
+                    before(description);
                     base.evaluate();
+                } catch (Throwable t) {
+                    log.error("Unable to apply statement", t);
                 } finally {
                     after();
                 }
@@ -123,9 +133,10 @@ public class Server implements TestRule {
      * </p>
      *
      * @param description the test description
-     * @throws Exception if any error occurs
+     * @throws ClassNotFoundException if tested class is not in the classpath
+     * @throws ServletException if the server fails to start
      */
-    protected void before(final Description description) throws Exception {
+    protected void before(final Description description) throws ClassNotFoundException, ServletException {
 
         // Look for configuration
         final Class<?> clazz = Class.forName(description.getClassName());

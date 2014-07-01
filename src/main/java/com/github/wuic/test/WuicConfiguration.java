@@ -38,10 +38,12 @@
 
 package com.github.wuic.test;
 
+import com.github.wuic.exception.WuicException;
 import com.github.wuic.jee.WuicJeeContext;
 import com.github.wuic.xml.ReaderXmlContextBuilderConfigurator;
 import org.junit.rules.ExternalResource;
 
+import javax.xml.bind.JAXBException;
 import java.io.Reader;
 
 /**
@@ -80,9 +82,10 @@ public class WuicConfiguration extends ExternalResource {
      * </p>
      *
      * @param wuicXmlFile the XML configuration reader
-     * @throws Exception if XML configuration fails
+     * @throws WuicException if XML configuration fails
+     * @throws JAXBException if XML is not correct
      */
-    public void setWuicXmlReader(final Reader wuicXmlFile) throws Exception {
+    public void setWuicXmlReader(final Reader wuicXmlFile) throws JAXBException, WuicException {
         this.wuicXmlReader = wuicXmlFile;
         WuicJeeContext.getWuicFacade().configure(new ReaderXmlContextBuilderConfigurator(wuicXmlReader, TAG, false));
     }
