@@ -64,6 +64,7 @@ import javax.servlet.DispatcherType;
 import javax.servlet.ServletException;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 
 /**
  * <p>
@@ -153,42 +154,48 @@ public class Server implements TestRule {
         port = runnerConfiguration.port();
         host = runnerConfiguration.host();
 
-        // Creates the webapp handler
-        final PathHandler root = new PathHandler();
-        final io.undertow.servlet.api.ServletContainer container = io.undertow.servlet.api.ServletContainer.Factory.newInstance();
+        final URL resource = clazz.getResource(webApplicationPath);
 
-        final DeploymentInfo builder = new DeploymentInfo()
-                .setClassLoader(clazz.getClassLoader())
-                .setContextPath("/")
-                .setDeploymentName("ServletContainer.war")
-                .addListener(new ListenerInfo(WuicServletContextListener.class))
-                .setResourceManager(new FileResourceManager(new File(clazz.getResource(webApplicationPath).getFile()), 100));
+        if (resource == null) {
+            log.error(String.format("Web application path '%s' not found in classpath", webApplicationPath), new IllegalStateException());
+        } else {
+            // Creates the webapp handler
+            final PathHandler root = new PathHandler();
+            final io.undertow.servlet.api.ServletContainer container = io.undertow.servlet.api.ServletContainer.Factory.newInstance();
 
-        if (!welcomePage.isEmpty()) {
-            builder.addWelcomePage(welcomePage);
+            final DeploymentInfo builder = new DeploymentInfo()
+                    .setClassLoader(clazz.getClassLoader())
+                    .setContextPath("/")
+                    .setDeploymentName("ServletContainer.war")
+                    .addListener(new ListenerInfo(WuicServletContextListener.class))
+                    .setResourceManager(new FileResourceManager(new File(resource.getFile()), 100));
+
+            if (!welcomePage.isEmpty()) {
+                builder.addWelcomePage(welcomePage);
+            }
+
+            if (installFilter) {
+                builder.addFilter(new FilterInfo("Filter", HtmlParserFilter.class));
+                builder.addFilterUrlMapping("Filter", "/*", DispatcherType.REQUEST);
+            }
+
+            if (installServlet) {
+                builder.addServlet(Servlets.servlet("WuicServlet", WuicServlet.class).addMapping(WUIC_SERVLET_MAPPING));
+            }
+
+            builder.addInitParameter(WuicServletContextListener.WUIC_SERVLET_CONTEXT_PARAM, WUIC_SERVLET_PATH);
+
+            // Deploy then start
+            final DeploymentManager manager = container.addDeployment(builder);
+            manager.deploy();
+            root.addPrefixPath(builder.getContextPath(), manager.start());
+
+            server = Undertow.builder()
+                    .addHttpListener(port, host)
+                    .setHandler(root)
+                    .build();
+            server.start();
         }
-
-        if (installFilter) {
-            builder.addFilter(new FilterInfo("Filter", HtmlParserFilter.class));
-            builder.addFilterUrlMapping("Filter", "/*", DispatcherType.REQUEST);
-        }
-
-        if (installServlet) {
-            builder.addServlet(Servlets.servlet("WuicServlet", WuicServlet.class).addMapping(WUIC_SERVLET_MAPPING));
-        }
-
-        builder.addInitParameter(WuicServletContextListener.WUIC_SERVLET_CONTEXT_PARAM, WUIC_SERVLET_PATH);
-
-        // Deploy then start
-        final DeploymentManager manager = container.addDeployment(builder);
-        manager.deploy();
-        root.addPrefixPath(builder.getContextPath(), manager.start());
-
-        server = Undertow.builder()
-                .addHttpListener(port, host)
-                .setHandler(root)
-                .build();
-        server.start();
     }
 
     /**
