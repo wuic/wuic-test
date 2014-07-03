@@ -38,6 +38,7 @@
 
 package com.github.test.testthetest;
 
+import com.github.wuic.test.NoServlet;
 import com.github.wuic.test.Server;
 import com.github.wuic.test.WuicConfiguration;
 import com.github.wuic.test.WuicRunnerConfiguration;
@@ -46,10 +47,8 @@ import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 
-import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -62,14 +61,16 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @since 0.5.0
  * @version 0.1
  */
-@RunWith(JUnit4.class)
-@WuicRunnerConfiguration(webApplicationPath = "/testthetest", installWuicServlet = ServletTest.class)
-public class ServletContainerTest {
+@WuicRunnerConfiguration(welcomePage = "index.html",
+        webApplicationPath = "/testthetest",
+        installFilter = FilterTest.class,
+        installWuicServlet = NoServlet.class)
+public class FilterContainerTest {
 
     /**
-     * Needs to be incremented by servlet.
+     * Needs to be incremented by filter.
      */
-    public static final AtomicInteger SERVLET_COUNT = new AtomicInteger(0);
+    public static final AtomicInteger FILTER_COUNT = new AtomicInteger(0);
 
     /**
      * The server running during tests.
@@ -88,13 +89,12 @@ public class ServletContainerTest {
      * Executes a basic HTTP request and reads the response.
      * </p>
      *
-     * @throws Exception if test fails
+     * @throws java.io.IOException if any I/O error occurs
      */
     @Test
-    public void basicWuicXmlTest() throws Exception {
-        configuration.setWuicXmlReader(new FileReader(getClass().getResource("/testthetest/wuic.xml").getFile()));
-        final String content = IOUtils.readString(new InputStreamReader(server.get("/wuic/heap/aggregate.css").getEntity().getContent()));
-        Assert.assertTrue(content, content.contains(".cssclass {}"));
-        Assert.assertNotEquals(0, SERVLET_COUNT.get());
+    public void basicHttpGetTest() throws IOException {
+        final String content = IOUtils.readString(new InputStreamReader(server.get("/").getEntity().getContent()));
+        Assert.assertTrue(content, content.contains("Hello World"));
+        Assert.assertNotEquals(0, FILTER_COUNT.get());
     }
 }

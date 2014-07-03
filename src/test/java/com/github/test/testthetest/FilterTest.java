@@ -38,63 +38,31 @@
 
 package com.github.test.testthetest;
 
-import com.github.wuic.test.Server;
-import com.github.wuic.test.WuicConfiguration;
-import com.github.wuic.test.WuicRunnerConfiguration;
-import com.github.wuic.util.IOUtils;
-import org.junit.Assert;
-import org.junit.ClassRule;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
+import com.github.wuic.servlet.HtmlParserFilter;
 
-import java.io.FileReader;
-import java.io.InputStreamReader;
-import java.util.concurrent.atomic.AtomicInteger;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import java.io.IOException;
 
 /**
  * <p>
- * Tests the servlet container runner.
+ * Simple filter for test purpose.
  * </p>
  *
  * @author Guillaume DROUET
  * @since 0.5.0
  * @version 0.1
  */
-@RunWith(JUnit4.class)
-@WuicRunnerConfiguration(webApplicationPath = "/testthetest", installWuicServlet = ServletTest.class)
-public class ServletContainerTest {
+public class FilterTest extends HtmlParserFilter {
 
     /**
-     * Needs to be incremented by servlet.
+     * {@inheritDoc}
      */
-    public static final AtomicInteger SERVLET_COUNT = new AtomicInteger(0);
-
-    /**
-     * The server running during tests.
-     */
-    @ClassRule
-    public static Server server = new Server();
-
-    /**
-     * The current configuration.
-     */
-    @Rule
-    public WuicConfiguration configuration = new WuicConfiguration();
-
-    /**
-     * <p>
-     * Executes a basic HTTP request and reads the response.
-     * </p>
-     *
-     * @throws Exception if test fails
-     */
-    @Test
-    public void basicWuicXmlTest() throws Exception {
-        configuration.setWuicXmlReader(new FileReader(getClass().getResource("/testthetest/wuic.xml").getFile()));
-        final String content = IOUtils.readString(new InputStreamReader(server.get("/wuic/heap/aggregate.css").getEntity().getContent()));
-        Assert.assertTrue(content, content.contains(".cssclass {}"));
-        Assert.assertNotEquals(0, SERVLET_COUNT.get());
+    @Override
+    public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain) throws IOException, ServletException {
+        FilterContainerTest.FILTER_COUNT.incrementAndGet();
+        chain.doFilter(request, response);
     }
 }

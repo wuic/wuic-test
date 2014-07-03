@@ -148,8 +148,8 @@ public class Server implements TestRule {
         }
 
         final String webApplicationPath = runnerConfiguration.webApplicationPath();
-        final boolean installFilter = runnerConfiguration.installFilter();
-        final boolean installServlet = runnerConfiguration.installWuicServlet();
+        final Class<? extends HtmlParserFilter> installFilter = runnerConfiguration.installFilter();
+        final Class<? extends WuicServlet> installServlet = runnerConfiguration.installWuicServlet();
         final String welcomePage = runnerConfiguration.welcomePage();
         port = runnerConfiguration.port();
         host = runnerConfiguration.host();
@@ -174,13 +174,13 @@ public class Server implements TestRule {
                 builder.addWelcomePage(welcomePage);
             }
 
-            if (installFilter) {
-                builder.addFilter(new FilterInfo("Filter", HtmlParserFilter.class));
+            if (!NoFilter.class.equals(installFilter)) {
+                builder.addFilter(new FilterInfo("Filter", installFilter));
                 builder.addFilterUrlMapping("Filter", "/*", DispatcherType.REQUEST);
             }
 
-            if (installServlet) {
-                builder.addServlet(Servlets.servlet("WuicServlet", WuicServlet.class).addMapping(WUIC_SERVLET_MAPPING));
+            if (!NoServlet.class.equals(installServlet)) {
+                builder.addServlet(Servlets.servlet("WuicServlet", installServlet).addMapping(WUIC_SERVLET_MAPPING));
             }
 
             builder.addInitParameter(WuicServletContextListener.WUIC_SERVLET_CONTEXT_PARAM, WUIC_SERVLET_PATH);

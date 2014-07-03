@@ -57,6 +57,12 @@
         </dependency>
 
         <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>
@@ -82,6 +88,18 @@
 
         <dependency>
             <groupId>com.github.wuic</groupId>
+            <artifactId>wuic-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.wuic</groupId>
+            <artifactId>wuic-jee</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.wuic</groupId>
             <artifactId>wuic-servlet</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -93,10 +111,9 @@
         </dependency>
 
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>${slf4j.version}</version>
-            <scope>test</scope>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${mockito.version}</version>
         </dependency>
     </dependencies>
 
@@ -133,6 +150,7 @@
 
         <!-- libraries -->
         <slf4j.version>1.7.5</slf4j.version>
+        <mockito.version>1.9.5</mockito.version>
         <junit.version>4.11</junit.version>
         <undertow.version>1.0.15.Final</undertow.version>
         <httpclient.version>4.3.4</httpclient.version>
