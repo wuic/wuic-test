@@ -39,8 +39,6 @@
 package com.github.wuic.test;
 
 import com.github.wuic.jee.WuicServletContextListener;
-import com.github.wuic.servlet.HtmlParserFilter;
-import com.github.wuic.servlet.WuicServlet;
 import com.github.wuic.util.IOUtils;
 import io.undertow.Undertow;
 import io.undertow.server.handlers.PathHandler;
@@ -61,7 +59,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.DispatcherType;
+import javax.servlet.Filter;
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -148,8 +148,8 @@ public class Server implements TestRule {
         }
 
         final String webApplicationPath = runnerConfiguration.webApplicationPath();
-        final Class<? extends HtmlParserFilter> installFilter = runnerConfiguration.installFilter();
-        final Class<? extends WuicServlet> installServlet = runnerConfiguration.installWuicServlet();
+        final Class<? extends Filter> installFilter = runnerConfiguration.installFilter();
+        final Class<? extends HttpServlet> installServlet = runnerConfiguration.installServlet();
         final String welcomePage = runnerConfiguration.welcomePage();
         port = runnerConfiguration.port();
         host = runnerConfiguration.host();

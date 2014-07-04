@@ -63,7 +63,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @version 0.1
  */
 @RunWith(JUnit4.class)
-@WuicRunnerConfiguration(webApplicationPath = "/testthetest", installWuicServlet = ServletTest.class)
+@WuicRunnerConfiguration(webApplicationPath = "/testthetest", installServlet = ServletTest.class)
 public class ServletContainerTest {
 
     /**

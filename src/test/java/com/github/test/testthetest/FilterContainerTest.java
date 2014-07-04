@@ -38,7 +38,6 @@
 
 package com.github.test.testthetest;
 
-import com.github.wuic.test.NoServlet;
 import com.github.wuic.test.Server;
 import com.github.wuic.test.WuicConfiguration;
 import com.github.wuic.test.WuicRunnerConfiguration;
@@ -63,8 +62,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @WuicRunnerConfiguration(welcomePage = "index.html",
         webApplicationPath = "/testthetest",
-        installFilter = FilterTest.class,
-        installWuicServlet = NoServlet.class)
+        installFilter = FilterTest.class)
 public class FilterContainerTest {
 
     /**

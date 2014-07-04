@@ -38,9 +38,8 @@
 
 package com.github.wuic.test;
 
-import com.github.wuic.servlet.HtmlParserFilter;
-import com.github.wuic.servlet.WuicServlet;
-
+import javax.servlet.Filter;
+import javax.servlet.http.HttpServlet;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
@@ -78,21 +77,21 @@ public @interface WuicRunnerConfiguration {
      *
      * @return filter to install, {@link NoFilter} if nothing should be installed
      */
-    Class<? extends HtmlParserFilter> installFilter() default NoFilter.class;
+    Class<? extends Filter> installFilter() default NoFilter.class;
 
     /**
      * <p>
-     * Indicates the {@link com.github.wuic.servlet.WuicServlet} to be installed.
+     * Indicates the {@code HttpServlet} to be installed.
      * The servlet mapping will be '/wuic/*'.
      * </p>
      *
      * <p>
-     * {@link WuicServlet} will be installed by default.
+     * No servlet will be installed by default.
      * </p>
      *
      * @return servlet to install, {@link NoServlet} if nothing should be installed
      */
-    Class<? extends WuicServlet> installWuicServlet() default WuicServlet.class;
+    Class<? extends HttpServlet> installServlet() default NoServlet.class;
 
     /**
      * <p>
