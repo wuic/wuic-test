@@ -87,6 +87,6 @@ public class WuicConfiguration extends ExternalResource {
      */
     public void setWuicXmlReader(final Reader wuicXmlFile) throws JAXBException, WuicException {
         this.wuicXmlReader = wuicXmlFile;
-        WuicJeeContext.getWuicFacade().configure(new ReaderXmlContextBuilderConfigurator(wuicXmlReader, TAG, false));
+        WuicJeeContext.getWuicFacade().configure(new ReaderXmlContextBuilderConfigurator(wuicXmlReader, TAG, true));
     }
 }
