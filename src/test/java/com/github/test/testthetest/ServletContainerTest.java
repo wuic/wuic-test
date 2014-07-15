@@ -97,4 +97,17 @@ public class ServletContainerTest {
         Assert.assertTrue(content, content.contains(".cssclass {}"));
         Assert.assertNotEquals(0, SERVLET_COUNT.get());
     }
+
+    /**
+     * <p>
+     * Basic JSP test.
+     * </p>
+     *
+     * @throws Exception is test fails
+     */
+    @Test
+    public void basicJspTest() throws Exception {
+        final String content = IOUtils.readString(new InputStreamReader(server.get("/index.jsp").getEntity().getContent()));
+        Assert.assertNotEquals("2", content);
+    }
 }

@@ -41,6 +41,8 @@ package com.github.wuic.test;
 import com.github.wuic.jee.WuicServletContextListener;
 import com.github.wuic.util.IOUtils;
 import io.undertow.Undertow;
+import io.undertow.jsp.HackInstanceManager;
+import io.undertow.jsp.JspServletBuilder;
 import io.undertow.server.handlers.PathHandler;
 import io.undertow.server.handlers.resource.FileResourceManager;
 import io.undertow.servlet.Servlets;
@@ -52,6 +54,10 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.jasper.deploy.JspPropertyGroup;
+import org.apache.jasper.deploy.TagAttributeInfo;
+import org.apache.jasper.deploy.TagInfo;
+import org.apache.jasper.deploy.TagLibraryInfo;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -65,6 +71,7 @@ import javax.servlet.http.HttpServlet;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
 
 /**
  * <p>
@@ -183,13 +190,49 @@ public class Server implements TestRule {
                 builder.addServlet(Servlets.servlet("WuicServlet", installServlet).addMapping(WUIC_SERVLET_MAPPING));
             }
 
+            final HashMap<String, JspPropertyGroup> jspPropertyGroups = new HashMap<String, JspPropertyGroup>();
+            final JspPropertyGroup jspPropertyGroup = new JspPropertyGroup();
+            jspPropertyGroups.put("", jspPropertyGroup);
+            builder.addServlet(JspServletBuilder.createServlet("Default Jsp Servlet", "*.jsp"));
+            final HashMap<String, TagLibraryInfo> tagLibs = new HashMap<String, TagLibraryInfo>();
+            final TagInfo wuic = new TagInfo();
+            wuic.setDisplayName("Web UI Compressor");
+            wuic.setTagClassName("com.github.wuic.tag.WuicTag");
+            wuic.setTagName("html-import");
+            wuic.setBodyContent("empty");
+            final TagAttributeInfo workflowId = new TagAttributeInfo();
+            workflowId.setName("workflowId");
+            wuic.addTagAttributeInfo(workflowId);
+
+            final TagLibraryInfo wuicTagLibInfo = new TagLibraryInfo();
+            wuicTagLibInfo.addTagInfo(wuic);
+            wuicTagLibInfo.setPrefix("wuic");
+            wuicTagLibInfo.setTlibversion("1.0.0");
+            wuicTagLibInfo.setJspversion("2.1");
+            wuicTagLibInfo.setUri("http://www.github.com/wuic");
+            tagLibs.put("http://www.github.com/wuic", wuicTagLibInfo);
+
+            final TagInfo wuicConfig = new TagInfo();
+            wuicConfig.setDisplayName("Web UI Compressor Conf");
+            wuicConfig.setTagClassName("com.github.wuic.tag.WuicXmlConfigurationTag");
+            wuicConfig.setTagName("xml-configuration");
+            wuicConfig.setBodyContent("tagdependent");
+
+            final TagLibraryInfo wuicConfTagLibInfo = new TagLibraryInfo();
+            wuicConfTagLibInfo.addTagInfo(wuicConfig);
+            wuicConfTagLibInfo.setPrefix("wuic-conf");
+            wuicConfTagLibInfo.setTlibversion("1.0.0");
+            wuicConfTagLibInfo.setJspversion("2.1");
+            wuicConfTagLibInfo.setUri("http://www.github.com/wuic/xml-conf");
+            tagLibs.put("http://www.github.com/wuic/xml-conf", wuicConfTagLibInfo);
+
+            JspServletBuilder.setupDeployment(builder, jspPropertyGroups, tagLibs, new HackInstanceManager());
             builder.addInitParameter(WuicServletContextListener.WUIC_SERVLET_CONTEXT_PARAM, WUIC_SERVLET_PATH);
 
             // Deploy then start
             final DeploymentManager manager = container.addDeployment(builder);
             manager.deploy();
             root.addPrefixPath(builder.getContextPath(), manager.start());
-
             server = Undertow.builder()
                     .addHttpListener(port, host)
                     .setHandler(root)
