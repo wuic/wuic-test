@@ -33,4 +33,4 @@ public class ServletContainerTest {
 }
 ```
 
-See the [own unit tests of the project](https://github.com/wuic/wuic-test/tree/master/src/test/java/com/github/test/testthetest) to get full samples.
+See the [own unit tests of the project](https://github.com/wuic/wuic-test/tree/wuic-0.5.x-snapshot/src/test/java/com/github/test/testthetest) to get full samples.
