@@ -38,8 +38,6 @@
 
 package com.github.wuic.test;
 
-import com.github.wuic.jee.WuicServletContextListener;
-import com.github.wuic.util.IOUtils;
 import io.undertow.Undertow;
 import io.undertow.jsp.HackInstanceManager;
 import io.undertow.jsp.JspServletBuilder;
@@ -49,7 +47,6 @@ import io.undertow.servlet.Servlets;
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.DeploymentManager;
 import io.undertow.servlet.api.FilterInfo;
-import io.undertow.servlet.api.ListenerInfo;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -86,12 +83,12 @@ import java.util.HashMap;
 public class Server implements TestRule {
 
     /**
-     * The servlet path for {@link com.github.wuic.servlet.WuicServlet}.
+     * The servlet path for WuicServlet.
      */
     private static final String WUIC_SERVLET_PATH = "/wuic";
 
     /**
-     * The mapping for {@link com.github.wuic.servlet.WuicServlet}.
+     * The mapping for WuicServlet.
      */
     private static final String WUIC_SERVLET_MAPPING = WUIC_SERVLET_PATH + "/*";
 
@@ -174,7 +171,6 @@ public class Server implements TestRule {
                     .setClassLoader(clazz.getClassLoader())
                     .setContextPath("/")
                     .setDeploymentName("ServletContainer.war")
-                    .addListener(new ListenerInfo(WuicServletContextListener.class))
                     .setResourceManager(new FileResourceManager(new File(resource.getFile()), 100));
 
             if (!welcomePage.isEmpty()) {
@@ -227,7 +223,6 @@ public class Server implements TestRule {
             tagLibs.put("http://www.github.com/wuic/xml-conf", wuicConfTagLibInfo);
 
             JspServletBuilder.setupDeployment(builder, jspPropertyGroups, tagLibs, new HackInstanceManager());
-            builder.addInitParameter(WuicServletContextListener.WUIC_SERVLET_CONTEXT_PARAM, WUIC_SERVLET_PATH);
 
             // Deploy then start
             final DeploymentManager manager = container.addDeployment(builder);
@@ -261,7 +256,7 @@ public class Server implements TestRule {
      */
     public HttpResponse get(final String path) throws IOException {
         final HttpClient client = HttpClientBuilder.create().build();
-        HttpGet get = new HttpGet(IOUtils.mergePath("http://" + host + ":" + port, path));
+        HttpGet get = new HttpGet("http://" + host + ":" + port + "/" + path);
         return client.execute(get);
     }
 }

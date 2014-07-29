@@ -41,7 +41,6 @@ package com.github.test.testthetest;
 import com.github.wuic.test.Server;
 import com.github.wuic.test.WuicConfiguration;
 import com.github.wuic.test.WuicRunnerConfiguration;
-import com.github.wuic.util.IOUtils;
 import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -50,7 +49,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import java.io.FileReader;
-import java.io.InputStreamReader;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -81,7 +79,7 @@ public class ServletContainerTest {
      * The current configuration.
      */
     @Rule
-    public WuicConfiguration configuration = new WuicConfiguration();
+    public WuicConfiguration configuration = new WuicConfiguration.Adapter();
 
     /**
      * <p>
@@ -92,9 +90,11 @@ public class ServletContainerTest {
      */
     @Test
     public void basicWuicXmlTest() throws Exception {
-        configuration.setWuicXmlReader(new FileReader(getClass().getResource("/testthetest/wuic.xml").getFile()));
-        final String content = IOUtils.readString(new InputStreamReader(server.get("/wuic/heap/aggregate.css").getEntity().getContent()));
-        Assert.assertTrue(content, content.contains(".cssclass {}"));
+        final String expect = ".cssclass {}";
+        final byte[] buff = new byte[expect.length()];
+        server.get("/wuic/heap/aggregate.css").getEntity().getContent().read(buff, 0, buff.length);
+        final String res = new String(buff);
+        Assert.assertTrue(res, res.equals(expect));
         Assert.assertNotEquals(0, SERVLET_COUNT.get());
     }
 
@@ -107,7 +107,7 @@ public class ServletContainerTest {
      */
     @Test
     public void basicJspTest() throws Exception {
-        final String content = IOUtils.readString(new InputStreamReader(server.get("/index.jsp").getEntity().getContent()));
-        Assert.assertNotEquals("2", content);
+        final String content = new String(new byte[] { (byte) server.get("/index.jsp").getEntity().getContent().read() });
+        Assert.assertEquals("2", content);
     }
 }

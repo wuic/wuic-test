@@ -87,33 +87,31 @@
         </dependency>
 
         <dependency>
-            <groupId>com.github.wuic</groupId>
-            <artifactId>wuic-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.github.wuic</groupId>
-            <artifactId>wuic-jee</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.github.wuic</groupId>
-            <artifactId>wuic-servlet</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.github.wuic</groupId>
-            <artifactId>wuic-tag</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <version>${mockito.version}</version>
+        </dependency>
+
+        <!-- JSP -->
+        <dependency>
+            <groupId>javax.servlet.jsp</groupId>
+            <artifactId>jsp-api</artifactId>
+            <version>${jsp-api.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.jdt.core.compiler</groupId>
+            <artifactId>ecj</artifactId>
+            <version>${ecj.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.el</artifactId>
+            <version>${el.version}</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
@@ -154,6 +152,9 @@
         <junit.version>4.11</junit.version>
         <undertow.version>1.0.0.Final</undertow.version>
         <httpclient.version>4.3.4</httpclient.version>
+        <jsp-api.version>2.2</jsp-api.version>
+        <ecj.version>4.3.1</ecj.version>
+        <el.version>3.0-b01</el.version>
     </properties>
 	
 </project>

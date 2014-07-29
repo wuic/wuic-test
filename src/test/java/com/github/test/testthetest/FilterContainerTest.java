@@ -41,14 +41,12 @@ package com.github.test.testthetest;
 import com.github.wuic.test.Server;
 import com.github.wuic.test.WuicConfiguration;
 import com.github.wuic.test.WuicRunnerConfiguration;
-import com.github.wuic.util.IOUtils;
 import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -66,6 +64,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class FilterContainerTest {
 
     /**
+     * Buffer length.
+     */
+    private static final int BUFFER_LEN = 4000;
+
+    /**
      * Needs to be incremented by filter.
      */
     public static final AtomicInteger FILTER_COUNT = new AtomicInteger(0);
@@ -80,7 +83,7 @@ public class FilterContainerTest {
      * The current configuration.
      */
     @Rule
-    public WuicConfiguration configuration = new WuicConfiguration();
+    public WuicConfiguration configuration = new WuicConfiguration.Adapter();
 
     /**
      * <p>
@@ -91,8 +94,11 @@ public class FilterContainerTest {
      */
     @Test
     public void basicHttpGetTest() throws IOException {
-        final String content = IOUtils.readString(new InputStreamReader(server.get("/").getEntity().getContent()));
-        Assert.assertTrue(content, content.contains("Hello World"));
+        final String expect = "Hello World";
+        final byte[] buff = new byte[BUFFER_LEN];
+        server.get("/wuic/test").getEntity().getContent().read(buff, 0, buff.length);
+        final String res = new String(buff);
+        Assert.assertTrue(res, res.contains(expect));
         Assert.assertNotEquals(0, FILTER_COUNT.get());
     }
 }

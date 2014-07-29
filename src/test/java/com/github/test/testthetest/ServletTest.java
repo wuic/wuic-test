@@ -38,13 +38,8 @@
 
 package com.github.test.testthetest;
 
-import com.github.wuic.exception.WuicException;
-import com.github.wuic.jee.WuicJeeContext;
-import com.github.wuic.nut.Nut;
-import com.github.wuic.servlet.WuicServlet;
-import com.github.wuic.util.IOUtils;
-
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -58,19 +53,14 @@ import java.io.IOException;
  * @since 0.5.0
  * @version 0.1
  */
-public class ServletTest extends WuicServlet {
+public class ServletTest extends HttpServlet {
 
     /**
      * {@inheritDoc}
      */
     @Override
     public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
-        try {
-            ServletContainerTest.SERVLET_COUNT.incrementAndGet();
-            final Nut nut = WuicJeeContext.getWuicFacade().runWorkflow("heap", "aggregate.css");
-            IOUtils.copyStream(nut.openStream(), response.getOutputStream());
-        } catch (WuicException we) {
-            throw new ServletException(we);
-        }
+        ServletContainerTest.SERVLET_COUNT.incrementAndGet();
+        response.getOutputStream().write(".cssclass {}".getBytes());
     }
 }

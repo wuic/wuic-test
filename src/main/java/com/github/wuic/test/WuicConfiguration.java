@@ -38,9 +38,9 @@
 
 package com.github.wuic.test;
 
-import com.github.wuic.exception.WuicException;
-import com.github.wuic.jee.WuicJeeContext;
-import com.github.wuic.xml.ReaderXmlContextBuilderConfigurator;
+//import com.github.wuic.exception.WuicException;
+//import com.github.wuic.jee.WuicJeeContext;
+//import com.github.wuic.xml.ReaderXmlContextBuilderConfigurator;
 import org.junit.rules.ExternalResource;
 
 import javax.xml.bind.JAXBException;
@@ -55,26 +55,42 @@ import java.io.Reader;
  * @version 1.0
  * @since 0.5.0
  */
-public class WuicConfiguration extends ExternalResource {
+public abstract class WuicConfiguration extends ExternalResource {
+
+    public static final class Adapter extends WuicConfiguration {
+
+        @Override
+        public void clearConfiguration() {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        @Override
+        public void setWuicXmlReader(Reader wuicXmlFile) throws JAXBException {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }
+    }
 
     /**
      * Tag name.
      */
-    private static final String TAG = WuicConfiguration.class.getName();
+    //private static final String TAG = WuicConfiguration.class.getName();
 
     /**
      * Reader on the current configuration.
      */
-    private Reader wuicXmlReader;
+    //private Reader wuicXmlReader;
 
     /**
      * {@inheritDoc}
      */
     @Override
     protected void after() {
-        WuicJeeContext.getWuicFacade().clearTag(TAG);
-        wuicXmlReader = null;
+        //WuicJeeContext.getWuicFacade().clearTag(TAG);
+        //wuicXmlReader = null;
+        clearConfiguration();
     }
+
+    public abstract void clearConfiguration();
 
     /**
      * <p>
@@ -82,11 +98,10 @@ public class WuicConfiguration extends ExternalResource {
      * </p>
      *
      * @param wuicXmlFile the XML configuration reader
-     * @throws WuicException if XML configuration fails
      * @throws JAXBException if XML is not correct
      */
-    public void setWuicXmlReader(final Reader wuicXmlFile) throws JAXBException, WuicException {
-        this.wuicXmlReader = wuicXmlFile;
-        WuicJeeContext.getWuicFacade().configure(new ReaderXmlContextBuilderConfigurator(wuicXmlReader, TAG, true));
-    }
+    public abstract void setWuicXmlReader(final Reader wuicXmlFile) throws JAXBException;/*, WuicException*/// {
+       // this.wuicXmlReader = wuicXmlFile;
+  //      WuicJeeContext.getWuicFacade().configure(new ReaderXmlContextBuilderConfigurator(wuicXmlReader, TAG, true));
+    //}
 }

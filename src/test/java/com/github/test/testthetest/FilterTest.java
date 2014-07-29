@@ -38,13 +38,14 @@
 
 package com.github.test.testthetest;
 
-import com.github.wuic.servlet.HtmlParserFilter;
-
+import javax.servlet.Filter;
 import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * <p>
@@ -55,7 +56,14 @@ import java.io.IOException;
  * @since 0.5.0
  * @version 0.1
  */
-public class FilterTest extends HtmlParserFilter {
+public class FilterTest implements Filter {
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void init(final FilterConfig filterConfig) throws ServletException {
+    }
 
     /**
      * {@inheritDoc}
@@ -63,6 +71,19 @@ public class FilterTest extends HtmlParserFilter {
     @Override
     public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain) throws IOException, ServletException {
         FilterContainerTest.FILTER_COUNT.incrementAndGet();
-        chain.doFilter(request, response);
+
+        final InputStream is = getClass().getResourceAsStream("/testthetest/index.html");
+        int offset;
+
+        while ((offset = is.read()) != -1) {
+            response.getOutputStream().write(offset);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void destroy() {
     }
 }
