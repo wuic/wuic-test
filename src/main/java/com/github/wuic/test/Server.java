@@ -47,6 +47,7 @@ import io.undertow.servlet.Servlets;
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.DeploymentManager;
 import io.undertow.servlet.api.FilterInfo;
+import io.undertow.servlet.api.ListenerInfo;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -63,6 +64,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
+import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import java.io.File;
@@ -154,6 +156,7 @@ public class Server implements TestRule {
         final String webApplicationPath = runnerConfiguration.webApplicationPath();
         final Class<? extends Filter> installFilter = runnerConfiguration.installFilter();
         final Class<? extends HttpServlet> installServlet = runnerConfiguration.installServlet();
+        final Class<? extends ServletContextListener> installListener = runnerConfiguration.installListener();
         final String welcomePage = runnerConfiguration.welcomePage();
         port = runnerConfiguration.port();
         host = runnerConfiguration.host();
@@ -184,6 +187,10 @@ public class Server implements TestRule {
 
             if (!NoServlet.class.equals(installServlet)) {
                 builder.addServlet(Servlets.servlet("WuicServlet", installServlet).addMapping(WUIC_SERVLET_MAPPING));
+            }
+
+            if (!NoListener.class.equals(installListener)) {
+                builder.addListener(new ListenerInfo(installListener));
             }
 
             final HashMap<String, JspPropertyGroup> jspPropertyGroups = new HashMap<String, JspPropertyGroup>();
@@ -223,6 +230,7 @@ public class Server implements TestRule {
             tagLibs.put("http://www.github.com/wuic/xml-conf", wuicConfTagLibInfo);
 
             JspServletBuilder.setupDeployment(builder, jspPropertyGroups, tagLibs, new HackInstanceManager());
+            builder.addInitParameter("c.g.w.wuicContextPath", WUIC_SERVLET_PATH);
 
             // Deploy then start
             final DeploymentManager manager = container.addDeployment(builder);

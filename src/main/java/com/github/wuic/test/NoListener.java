@@ -38,103 +38,31 @@
 
 package com.github.wuic.test;
 
-import javax.servlet.Filter;
+import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import javax.servlet.http.HttpServlet;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 
 /**
  * <p>
- * Annotation used to configure test runner.
+ * Marker class that indicates that no listener should be installed.
  * </p>
  *
  * @author Guillaume DROUET
  * @version 1.0
  * @since 0.5.0
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-@Inherited
-public @interface WuicRunnerConfiguration {
+public class NoListener implements ServletContextListener {
 
     /**
-     * Default port.
+     * {@inheritDoc}
      */
-    int DEFAULT_PORT = 8080;
+    @Override
+    public void contextInitialized(final ServletContextEvent servletContextEvent) {
+    }
 
     /**
-     * <p>
-     * Indicates the Filter to be installed. The filter mapping will be '/*'.
-     * </p>
-     *
-     * <p>
-     * No filter should be installed by default.
-     * </p>
-     *
-     * @return filter to install, {@link NoFilter} if nothing should be installed
+     * {@inheritDoc}
      */
-    Class<? extends Filter> installFilter() default NoFilter.class;
-
-    /**
-     * <p>
-     * Indicates the {@code HttpServlet} to be installed.
-     * The servlet mapping will be '/wuic/*'.
-     * </p>
-     *
-     * <p>
-     * No servlet will be installed by default.
-     * </p>
-     *
-     * @return servlet to install, {@link NoServlet} if nothing should be installed
-     */
-    Class<? extends HttpServlet> installServlet() default NoServlet.class;
-
-    /**
-     * <p>
-     * Indicates the listener to install.
-     * </p>
-     *
-     * @return
-     */
-    Class<? extends ServletContextListener> installListener() default NoListener.class;
-
-    /**
-     * <p>
-     * Returns the classpath entry corresponding to the web application to be deployed.
-     * </p>
-     *
-     * @return the path
-     */
-    String webApplicationPath() default "/";
-
-    /**
-     * <p>
-     * Indicates any welcome page.
-     * </p>
-     *
-     * @return the welcome page
-     */
-    String welcomePage() default "";
-
-    /**
-     * <p>
-     * Indicates the listened port.
-     * </p>
-     *
-     * @return the listened port (8080 by default)
-     */
-    int port() default DEFAULT_PORT;
-
-    /**
-     * <p>
-     * Indicates the deployed domain.
-     * </p>
-     *
-     * @return the domain (localhost by default)
-     */
-    String host() default "localhost";
+    @Override
+    public void contextDestroyed(final ServletContextEvent servletContextEvent) {
+    }
 }

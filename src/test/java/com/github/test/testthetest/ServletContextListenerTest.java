@@ -36,105 +36,74 @@
  */
 
 
-package com.github.wuic.test;
+package com.github.test.testthetest;
 
-import javax.servlet.Filter;
+import com.github.wuic.test.Server;
+import com.github.wuic.test.WuicConfiguration;
+import com.github.wuic.test.WuicRunnerConfiguration;
+import org.junit.Assert;
+import org.junit.ClassRule;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
+
+import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import javax.servlet.http.HttpServlet;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * <p>
- * Annotation used to configure test runner.
+ * Tests the servlet container runner.
  * </p>
  *
  * @author Guillaume DROUET
- * @version 1.0
  * @since 0.5.0
+ * @version 0.1
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-@Inherited
-public @interface WuicRunnerConfiguration {
+@RunWith(JUnit4.class)
+@WuicRunnerConfiguration(webApplicationPath = "/testthetest", installListener = ServletContextListenerTest.class)
+public class ServletContextListenerTest implements ServletContextListener {
 
     /**
-     * Default port.
+     * Needs to be incremented by listener.
      */
-    int DEFAULT_PORT = 8080;
+    public static final AtomicInteger INIT_COUNT = new AtomicInteger(0);
 
     /**
-     * <p>
-     * Indicates the Filter to be installed. The filter mapping will be '/*'.
-     * </p>
-     *
-     * <p>
-     * No filter should be installed by default.
-     * </p>
-     *
-     * @return filter to install, {@link NoFilter} if nothing should be installed
+     * The server running during tests.
      */
-    Class<? extends Filter> installFilter() default NoFilter.class;
+    @ClassRule
+    public static Server server = new Server();
 
     /**
-     * <p>
-     * Indicates the {@code HttpServlet} to be installed.
-     * The servlet mapping will be '/wuic/*'.
-     * </p>
-     *
-     * <p>
-     * No servlet will be installed by default.
-     * </p>
-     *
-     * @return servlet to install, {@link NoServlet} if nothing should be installed
+     * The current configuration.
      */
-    Class<? extends HttpServlet> installServlet() default NoServlet.class;
+    @Rule
+    public WuicConfiguration configuration = new WuicConfiguration.Adapter();
 
     /**
      * <p>
-     * Indicates the listener to install.
+     * Basic listener invocation test.
      * </p>
-     *
-     * @return
      */
-    Class<? extends ServletContextListener> installListener() default NoListener.class;
+    @Test
+    public void listenerTest() {
+        Assert.assertNotEquals(0, INIT_COUNT.intValue());
+    }
 
     /**
-     * <p>
-     * Returns the classpath entry corresponding to the web application to be deployed.
-     * </p>
-     *
-     * @return the path
+     * {@inheritDoc}
      */
-    String webApplicationPath() default "/";
+    @Override
+    public void contextInitialized(final ServletContextEvent servletContextEvent) {
+        INIT_COUNT.incrementAndGet();
+    }
 
     /**
-     * <p>
-     * Indicates any welcome page.
-     * </p>
-     *
-     * @return the welcome page
+     * {@inheritDoc}
      */
-    String welcomePage() default "";
-
-    /**
-     * <p>
-     * Indicates the listened port.
-     * </p>
-     *
-     * @return the listened port (8080 by default)
-     */
-    int port() default DEFAULT_PORT;
-
-    /**
-     * <p>
-     * Indicates the deployed domain.
-     * </p>
-     *
-     * @return the domain (localhost by default)
-     */
-    String host() default "localhost";
+    @Override
+    public void contextDestroyed(final ServletContextEvent servletContextEvent) {
+    }
 }
