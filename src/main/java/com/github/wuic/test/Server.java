@@ -64,6 +64,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -113,6 +114,11 @@ public class Server implements TestRule {
      * The port.
      */
     private int port;
+
+    /**
+     * The context.
+     */
+    private ServletContext servletContext;
 
     /**
      * {@inheritDoc}
@@ -230,11 +236,12 @@ public class Server implements TestRule {
             tagLibs.put("http://www.github.com/wuic/xml-conf", wuicConfTagLibInfo);
 
             JspServletBuilder.setupDeployment(builder, jspPropertyGroups, tagLibs, new HackInstanceManager());
-            builder.addInitParameter("c.g.w.wuicContextPath", WUIC_SERVLET_PATH);
+            builder.addInitParameter("c.g.wuic.facade.contextPath", WUIC_SERVLET_PATH);
 
             // Deploy then start
             final DeploymentManager manager = container.addDeployment(builder);
             manager.deploy();
+            servletContext = manager.getDeployment().getServletContext();
             root.addPrefixPath(builder.getContextPath(), manager.start());
             server = Undertow.builder()
                     .addHttpListener(port, host)
@@ -266,5 +273,16 @@ public class Server implements TestRule {
         final HttpClient client = HttpClientBuilder.create().build();
         HttpGet get = new HttpGet("http://" + host + ":" + port + "/" + path);
         return client.execute(get);
+    }
+
+    /**
+     * <p>
+     * Gets the context.
+     * </p>
+     *
+     * @return the servlet context
+     */
+    public ServletContext getServletContext() {
+        return servletContext;
     }
 }
