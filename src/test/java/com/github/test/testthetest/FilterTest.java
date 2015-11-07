@@ -54,7 +54,6 @@ import java.io.InputStream;
  *
  * @author Guillaume DROUET
  * @since 0.5.0
- * @version 0.1
  */
 public class FilterTest implements Filter {
 

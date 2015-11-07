@@ -57,7 +57,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * @author Guillaume DROUET
  * @since 0.5.0
- * @version 0.1
  */
 @RunWith(JUnit4.class)
 @WuicRunnerConfiguration(webApplicationPath = "/testthetest", installServlet = ServletTest.class)

@@ -49,7 +49,6 @@ import java.io.Reader;
  * </p>
  *
  * @author Guillaume DROUET
- * @version 1.0
  * @since 0.5.0
  */
 public abstract class WuicConfiguration extends ExternalResource {
@@ -60,7 +59,6 @@ public abstract class WuicConfiguration extends ExternalResource {
      * </p>
      *
      * @author Guillaume DROUET
-     * @version 1.0
      * @since 0.5.0
      */
     public static final class Adapter extends WuicConfiguration {
