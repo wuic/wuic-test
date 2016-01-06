@@ -91,7 +91,7 @@ public class FilterContainerTest {
      *
      * @throws java.io.IOException if any I/O error occurs
      */
-    @Test
+    @Test(timeout = 60000)
     public void basicHttpGetTest() throws IOException {
         final String expect = "Hello World";
         final byte[] buff = new byte[BUFFER_LEN];

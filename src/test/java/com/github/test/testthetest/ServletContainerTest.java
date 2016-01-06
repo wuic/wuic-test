@@ -86,7 +86,7 @@ public class ServletContainerTest {
      *
      * @throws Exception if test fails
      */
-    @Test
+    @Test(timeout = 60000)
     public void basicWuicXmlTest() throws Exception {
         final String expect = ".cssclass {}";
         final byte[] buff = new byte[expect.length()];
@@ -103,7 +103,7 @@ public class ServletContainerTest {
      *
      * @throws Exception is test fails
      */
-    @Test
+    @Test(timeout = 60000)
     public void basicJspTest() throws Exception {
         final String content = new String(new byte[] { (byte) server.get("/index.jsp").getEntity().getContent().read() });
         Assert.assertEquals("2", content);

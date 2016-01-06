@@ -86,7 +86,7 @@ public class ServletContextListenerTest implements ServletContextListener {
      * Basic listener invocation test.
      * </p>
      */
-    @Test
+    @Test(timeout = 60000)
     public void listenerTest() {
         Assert.assertNotEquals(0, INIT_COUNT.intValue());
     }
