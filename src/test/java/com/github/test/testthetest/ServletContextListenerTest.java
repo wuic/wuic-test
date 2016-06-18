@@ -45,6 +45,7 @@ import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.Timeout;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
@@ -82,11 +83,17 @@ public class ServletContextListenerTest implements ServletContextListener {
     public WuicConfiguration configuration = new WuicConfiguration.Adapter();
 
     /**
+     * Timeout.
+     */
+    @Rule
+    public Timeout globalTimeout = Timeout.seconds(60);
+
+    /**
      * <p>
      * Basic listener invocation test.
      * </p>
      */
-    @Test(timeout = 60000)
+    @Test
     public void listenerTest() {
         Assert.assertNotEquals(0, INIT_COUNT.intValue());
     }

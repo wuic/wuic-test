@@ -45,6 +45,7 @@ import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.Timeout;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
@@ -80,13 +81,19 @@ public class ServletContainerTest {
     public WuicConfiguration configuration = new WuicConfiguration.Adapter();
 
     /**
+     * Timeout.
+     */
+    @Rule
+    public Timeout globalTimeout = Timeout.seconds(60);
+
+    /**
      * <p>
      * Executes a basic HTTP request and reads the response.
      * </p>
      *
      * @throws Exception if test fails
      */
-    @Test(timeout = 60000)
+    @Test
     public void basicWuicXmlTest() throws Exception {
         final String expect = ".cssclass {}";
         final byte[] buff = new byte[expect.length()];
@@ -103,7 +110,7 @@ public class ServletContainerTest {
      *
      * @throws Exception is test fails
      */
-    @Test(timeout = 60000)
+    @Test
     public void basicJspTest() throws Exception {
         final String content = new String(new byte[] { (byte) server.get("/index.jsp").getEntity().getContent().read() });
         Assert.assertEquals("2", content);

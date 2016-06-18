@@ -45,6 +45,7 @@ import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.Timeout;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -85,13 +86,19 @@ public class FilterContainerTest {
     public WuicConfiguration configuration = new WuicConfiguration.Adapter();
 
     /**
+     * Timeout.
+     */
+    @Rule
+    public Timeout globalTimeout = Timeout.seconds(60);
+
+    /**
      * <p>
      * Executes a basic HTTP request and reads the response.
      * </p>
      *
      * @throws java.io.IOException if any I/O error occurs
      */
-    @Test(timeout = 60000)
+    @Test
     public void basicHttpGetTest() throws IOException {
         final String expect = "Hello World";
         final byte[] buff = new byte[BUFFER_LEN];
